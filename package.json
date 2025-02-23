@@ -9,12 +9,17 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "bcrypt": "^5.1.1",
+    "connect-mongo": "^5.1.0",
     "cors": "^2.8.5",
     "csv-parser": "^3.0.0",
-    "express": "^4.21.1",
+    "express": "^4.21.2",
+    "express-session": "^1.18.1",
     "lucide-react": "^0.456.0",
-    "mongodb": "^6.10.0",
+    "mongodb": "^6.13.1",
     "next": "15.0.3",
+    "passport": "^0.7.0",
+    "passport-local": "^1.0.0",
     "react": "19.0.0-rc-66855b96-20241106",
     "react-dom": "19.0.0-rc-66855b96-20241106"
   },

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const parseAuthors = require('../helpers/parseAuthors');
+const parseAuthors = require('../server/helpers/parseAuthors');
 
 // Trending Books API
 router.get('/', async (req, res) => {
