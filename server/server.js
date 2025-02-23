@@ -1,50 +1,58 @@
+// server.js
 const express = require('express');
 const cors = require('cors');
-const { MongoClient } = require('mongodb');
+const session = require('express-session');
+const passport = require('passport');
+const MongoStore = require('connect-mongo');
+const { MongoClient, ObjectId } = require('mongodb');
 
 const app = express();
 const PORT = 3001;
-
-// MongoDB Connection URI
 const uri = 'mongodb://127.0.0.1:27017';
-
-const client = new MongoClient(uri, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  serverSelectionTimeoutMS: 5000, // Adjust timeout for better error handling
-});
+const client = new MongoClient(uri);
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:3000', // Your Next.js frontend URL
+  credentials: true,
+}));
 app.use(express.json());
+app.use(session({
+  secret: 'your-secret-key', // Replace with your own secret (or load from env)
+  resave: false,
+  saveUninitialized: false,
+  store: MongoStore.create({ mongoUrl: 'mongodb://127.0.0.1:27017/book_database' }),
+}));
+app.use(passport.initialize());
+app.use(passport.session());
 
-// Import Routes
-const trendingBooksRoutes = require('./routes/trendingBooks');
-const searchBooksRoutes = require('./routes/searchBooks');
+// Import existing routes
+const trendingBooksRoutes = require('../routes/trendingBooks');
+const searchBooksRoutes = require('../routes/searchBooks');
+// Import the new auth routes
+const authRoutes = require('../routes/auth');
 
-// Async function to connect to MongoDB and start the server
-async function startServer() {
-  try {
-    await client.connect();
-    console.log('Connected to MongoDB 8.0.4');
+client.connect().then(() => {
+  console.log('Connected to MongoDB');
+  const database = client.db('book_database');
+  app.locals.db = database; // Make the DB accessible in routes
 
-    const database = client.db('book_database');
-    app.locals.db = database;
+  // Passport configuration: pass in functions to retrieve users from the DB
+  const initializePassport = require('../passport-config');
+  initializePassport(
+    passport,
+    async (email) => await database.collection('users').findOne({ email }),
+    async (id) => await database.collection('users').findOne({ _id: new ObjectId(id) })
+  );
 
-    // Use Routes
-    app.use('/api/trending-books', trendingBooksRoutes);
-    app.use('/api/search-books', searchBooksRoutes);
+  // Use routes
+  app.use('/api/trending-books', trendingBooksRoutes);  
+  app.use('/api/search-books', searchBooksRoutes);
+  app.use('/api/auth', authRoutes);
 
-    // Start the Express server after MongoDB is connected
-    app.listen(PORT, () => {
-      console.log(`Server running at http://localhost:${PORT}`);
-    });
-
-  } catch (error) {
-    console.error('Failed to connect to MongoDB:', error);
-    process.exit(1); // Exit process if MongoDB connection fails
-  }
-}
-
-// Start the server
-startServer();
+  app.listen(PORT, () => {
+    console.log(`Server running at http://localhost:${PORT}`);
+  });
+}).catch(error => {
+  console.error('Failed to connect to MongoDB:', error);
+});
