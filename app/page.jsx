@@ -1,4 +1,3 @@
-// page.jsx
 "use client";
 import React, { useState, useEffect } from 'react';
 import NavigationBar from '../components/NavigationBar.jsx';
@@ -44,7 +43,6 @@ export default function BookSearchEngine() {
   const handleSearch = async (e) => {
     e.preventDefault();
     if (!searchQuery) return;
-
     setIsSearchView(true);
     setIsLoading(true);
     try {
@@ -69,6 +67,35 @@ export default function BookSearchEngine() {
     setExpandedFilters(prev => ({ ...prev, [filter]: !prev[filter] }));
   };
 
+  // Helper function to render the list of books (or skeleton loaders if loading)
+  const renderBooks = (maxDescLength) => {
+    if (isLoading) {
+      return Array(3).fill(null).map((_, index) => (
+        <div
+          key={index}
+          className="bg-gradient-to-br from-white to-blue-50 dark:from-gray-800 dark:to-gray-750 rounded-lg shadow-md p-6 transition-all duration-300"
+        >
+          <SkeletonLoader />
+        </div>
+      ));
+    } else {
+      return books.map((book, index) => (
+        <BookCard
+          key={index}
+          title={book.title || 'Untitled'}
+          author={book.authors || 'Author'}  // This expects authors to be a human-readable string
+          average_rating={book.average_rating}
+          ratings_count={book.ratings_count}
+          description={
+            book.description
+              ? `${book.description.slice(0, maxDescLength)}...`
+              : "A captivating story that you'll enjoy."
+          }
+        />
+      ));
+    }
+  };
+
   return (
     <div className={`min-h-screen flex flex-col bg-blue-50 dark:bg-gray-900 text-gray-700 dark:text-gray-200 transition-colors duration-300 ${isDarkMode ? 'dark' : ''}`}>
       <NavigationBar isDarkMode={isDarkMode} toggleTheme={toggleTheme} setIsSearchView={setIsSearchView} />
@@ -80,30 +107,8 @@ export default function BookSearchEngine() {
               <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} handleSearch={handleSearch} />
               <div className="flex space-x-8">
                 <FilterSidebar expandedFilters={expandedFilters} toggleFilter={toggleFilter} />
-
                 <div className="flex-grow space-y-6">
-                  {isLoading ? (
-                    Array(3).fill(null).map((_, index) => (
-                      <div key={index} className="bg-gradient-to-br from-white to-blue-50 dark:from-gray-800 dark:to-gray-750 rounded-lg shadow-md p-6 transition-all duration-300">
-                        <SkeletonLoader />
-                      </div>
-                    ))
-                  ) : (
-                    books.map((book, index) => (
-                      <BookCard
-                        key={index}
-                        title={book.title || "Untitled"}
-                        author={book.authors || "Author"}
-                        average_rating={book.average_rating}
-                        ratings_count={book.ratings_count}
-                        description={
-                          book.description
-                            ? `${book.description.slice(0, 150)}...`
-                            : "A captivating story that you'll enjoy."
-                        }
-                      />
-                    ))
-                  )}
+                  {renderBooks(200)}
                 </div>
               </div>
             </>
@@ -111,27 +116,18 @@ export default function BookSearchEngine() {
             <>
               <HeroSection />
               <FeaturedSection />
-
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md transition-all duration-300">
                 <div className="border-b border-gray-200 dark:border-gray-700">
                   <nav className="flex">
                     <button
                       onClick={() => setActiveTab('trending')}
-                      className={`px-6 py-3 text-sm font-medium transition-colors duration-300 ${
-                        activeTab === 'trending'
-                          ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400'
-                          : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
-                      }`}
+                      className={`px-6 py-3 text-sm font-medium transition-colors duration-300 ${activeTab === 'trending' ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}`}
                     >
                       Trending Books
                     </button>
                     <button
                       onClick={() => setActiveTab('recommended')}
-                      className={`px-6 py-3 text-sm font-medium transition-colors duration-300 ${
-                        activeTab === 'recommended'
-                          ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400'
-                          : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
-                      }`}
+                      className={`px-6 py-3 text-sm font-medium transition-colors duration-300 ${activeTab === 'recommended' ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}`}
                     >
                       Recommended for You
                     </button>
@@ -139,28 +135,7 @@ export default function BookSearchEngine() {
                 </div>
                 <div className="p-6">
                   <div className="grid grid-cols-3 gap-6">
-                    {isLoading ? (
-                      Array(6).fill(null).map((_, index) => (
-                        <div key={index} className="bg-gradient-to-br from-white to-blue-50 dark:from-gray-800 dark:to-gray-750 rounded-lg shadow-md p-6 transition-all duration-300">
-                          <SkeletonLoader />
-                        </div>
-                      ))
-                    ) : (
-                      books.map((book, index) => (
-                        <BookCard
-                          key={index}
-                          title={book.title || "Untitled"}
-                          author={book.authors || "Author"}
-                          average_rating={book.average_rating}
-                          ratings_count={book.ratings_count}
-                          description={
-                            book.description
-                              ? `${book.description.slice(0, 150)}...`
-                              : "A captivating story that you'll enjoy."
-                          }
-                        />
-                      ))
-                    )}
+                    {renderBooks(150)}
                   </div>
                 </div>
               </div>

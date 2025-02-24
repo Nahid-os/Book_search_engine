@@ -13,15 +13,19 @@ const BookCard = ({ title, author, average_rating, ratings_count, description })
       <h2 className="text-xl font-bold mb-2 text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300">
         {title}
       </h2>
-      <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 font-medium">by {author}</p>
+      <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 font-medium">
+        by {author}
+      </p>
       <div className="flex items-center mb-2">
         <Star className="h-4 w-4 text-yellow-400 mr-1" />
         <span className="text-sm text-gray-600 dark:text-gray-400">
-          {average_rating > 0 && ratings_count > 0 ? `${average_rating} (${ratings_count} reviews)` : "No rating available"}
+          {average_rating > 0 && ratings_count > 0
+            ? `${average_rating} (${ratings_count} reviews)`
+            : "No rating available"}
         </span>
       </div>
       <p className="text-sm text-gray-700 dark:text-gray-300 mb-4">
-        {truncateText(description || "A captivating story that you’ll enjoy.", 80)}
+        {truncateText(description || "A captivating story that you’ll enjoy.", 180)}
       </p>
     </div>
     <div className="flex space-x-2 mt-auto">
