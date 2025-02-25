@@ -44,6 +44,7 @@ router.get('/', async (req, res) => {
       // 6) Project the fields 
       {
         $project: {
+          book_id: 1,
           title: 1,
           average_rating: 1,
           ratings_count: 1,
