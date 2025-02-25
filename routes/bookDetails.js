@@ -6,18 +6,14 @@ router.get('/:bookId', async (req, res) => {
   try {
     const { bookId } = req.params;
     const db = req.app.locals.db;
-    
-    // If book_id is numeric, parse it:
     const numericId = parseInt(bookId, 10);
 
     const pipeline = [
-      {
-        $match: { book_id: numericId }
-      },
+      { $match: { book_id: numericId } },
       {
         $lookup: {
           from: "authors",
-          localField: "authors.author_id",  // authors field must be an array
+          localField: "authors.author_id",
           foreignField: "author_id",
           as: "authorDetails"
         }
@@ -34,7 +30,9 @@ router.get('/:bookId', async (req, res) => {
           publisher: 1,
           publication_year: 1,
           num_pages: 1,
-          isbn13: 1
+          isbn13: 1,
+          // Include max_genre in the output
+          max_genre: 1
         }
       }
     ];
@@ -46,7 +44,7 @@ router.get('/:bookId', async (req, res) => {
 
     const book = results[0];
 
-    // Transform authorDetails into a human-readable string for authors
+    // Convert authorDetails -> a single authors string
     const names = (book.authorDetails || []).map(a => a.name).filter(Boolean);
     book.authors = names.length > 0 ? names.join(', ') : "Author";
 

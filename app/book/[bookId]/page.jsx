@@ -35,6 +35,23 @@ export default function BookDetails() {
     return <div className="p-4">Book not found.</div>;
   }
 
+  // Floor the rating instead of rounding
+  const filledStars = Math.floor(book.average_rating || 0);
+
+  // Convert max_genre string -> array of genres
+  const genreArray = book.max_genre
+    ? book.max_genre.split(",").map((g) => g.trim())
+    : [];
+
+  // A small color palette for different genre chips
+  const genreColors = [
+    { bg: "bg-purple-100", text: "text-purple-800", darkBg: "dark:bg-purple-900", darkText: "dark:text-purple-200" },
+    { bg: "bg-blue-100",    text: "text-blue-800",   darkBg: "dark:bg-blue-900",    darkText: "dark:text-blue-200"    },
+    { bg: "bg-green-100",   text: "text-green-800",  darkBg: "dark:bg-green-900",   darkText: "dark:text-green-200"  },
+    { bg: "bg-pink-100",    text: "text-pink-800",   darkBg: "dark:bg-pink-900",    darkText: "dark:text-pink-200"   },
+    { bg: "bg-yellow-100",  text: "text-yellow-800", darkBg: "dark:bg-yellow-900",  darkText: "dark:text-yellow-200" },
+  ];
+
   return (
     <div className="bg-gradient-to-b from-purple-100 to-pink-100 dark:from-purple-900 dark:to-pink-900">
       <main className="container mx-auto px-4 py-8">
@@ -54,13 +71,14 @@ export default function BookDetails() {
             By {book.authors || "Unknown Author"}
           </p>
 
+          {/* Star Rating */}
           <div className="flex items-center mb-4">
             <div className="flex mr-4">
               {Array.from({ length: 5 }).map((_, i) => (
                 <Star
                   key={i}
                   className={`h-6 w-6 ${
-                    i < Math.round(book.average_rating)
+                    i < filledStars
                       ? "text-yellow-500"
                       : "text-gray-300 dark:text-gray-600"
                   }`}
@@ -72,43 +90,69 @@ export default function BookDetails() {
             </span>
           </div>
 
+          {/* Genre Tags */}
           <div className="flex flex-wrap gap-4 mb-6">
-            {/* Example genre tags – adjust or remove if you have dynamic genres */}
-            <span className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm dark:bg-purple-900 dark:text-purple-200">
-              Fantasy
-            </span>
-            <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm dark:bg-blue-900 dark:text-blue-200">
-              Adventure
-            </span>
-            <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm dark:bg-green-900 dark:text-green-200">
-              Young Adult
-            </span>
+            {genreArray.length > 0 ? (
+              genreArray.map((genre, idx) => {
+                const color = genreColors[idx % genreColors.length];
+                return (
+                  <span
+                    key={idx}
+                    className={`px-3 py-1 rounded-full text-sm ${color.bg} ${color.text} ${color.darkBg} ${color.darkText}`}
+                  >
+                    {genre}
+                  </span>
+                );
+              })
+            ) : (
+              <span className="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm dark:bg-gray-700 dark:text-gray-200">
+                No Genre
+              </span>
+            )}
           </div>
 
+          {/* Description */}
           <p className="text-gray-700 dark:text-gray-300 mb-6">
             {book.description || "No description available."}
           </p>
 
-          {/* Display Additional Fields */}
+          {/* Additional Fields */}
           <div className="grid grid-cols-2 gap-4 mb-6">
             <div>
-              <h2 className="font-semibold text-gray-700 dark:text-gray-300">Publisher</h2>
-              <p className="text-gray-600 dark:text-gray-400">{book.publisher || "Unknown Publisher"}</p>
+              <h2 className="font-semibold text-gray-700 dark:text-gray-300">
+                Publisher
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400">
+                {book.publisher || "Unknown Publisher"}
+              </p>
             </div>
             <div>
-              <h2 className="font-semibold text-gray-700 dark:text-gray-300">Publication Year</h2>
-              <p className="text-gray-600 dark:text-gray-400">{book.publication_year || "Unknown Date"}</p>
+              <h2 className="font-semibold text-gray-700 dark:text-gray-300">
+                Publication Year
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400">
+                {book.publication_year || "Unknown"}
+              </p>
             </div>
             <div>
-              <h2 className="font-semibold text-gray-700 dark:text-gray-300">Pages</h2>
-              <p className="text-gray-600 dark:text-gray-400">{book.num_pages || "N/A"}</p>
+              <h2 className="font-semibold text-gray-700 dark:text-gray-300">
+                Pages
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400">
+                {book.num_pages || "N/A"}
+              </p>
             </div>
             <div>
-              <h2 className="font-semibold text-gray-700 dark:text-gray-300">ISBN-13</h2>
-              <p className="text-gray-600 dark:text-gray-400">{book.isbn13 || "N/A"}</p>
+              <h2 className="font-semibold text-gray-700 dark:text-gray-300">
+                ISBN-13
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400">
+                {book.isbn13 || "N/A"}
+              </p>
             </div>
           </div>
 
+          {/* Action Buttons */}
           <div className="flex flex-wrap gap-4">
             <button className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors dark:bg-purple-700 dark:hover:bg-purple-600">
               Add to Reading List
@@ -124,9 +168,11 @@ export default function BookDetails() {
           </div>
         </div>
 
-        {/* Example "Similar Books" section – remove or adjust as needed */}
+        {/* Similar Books Section (Optional) */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-          <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-200">Similar Books</h2>
+          <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-200">
+            Similar Books
+          </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[...Array(3)].map((_, index) => (
               <Link href={`/book/${index + 2}`} key={index} className="block group">
@@ -134,14 +180,18 @@ export default function BookDetails() {
                   <h3 className="font-semibold text-lg mb-2 text-purple-800 dark:text-purple-200 group-hover:text-purple-900 dark:group-hover:text-purple-100">
                     The Dreamweaver&apos;s Tapestry
                   </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">By Elara Moonwhisper</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                    By Elara Moonwhisper
+                  </p>
                   <div className="flex items-center mb-2">
                     <Star className="h-4 w-4 text-yellow-500 fill-current" />
                     <Star className="h-4 w-4 text-yellow-500 fill-current" />
                     <Star className="h-4 w-4 text-yellow-500 fill-current" />
                     <Star className="h-4 w-4 text-yellow-500 fill-current" />
                     <Star className="h-4 w-4 text-gray-300 dark:text-gray-600" />
-                    <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">(4.2)</span>
+                    <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">
+                      (4.2)
+                    </span>
                   </div>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
                     A mesmerizing tale of a young weaver who discovers her tapestries can alter reality...
