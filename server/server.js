@@ -26,6 +26,12 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+// server.js (excerpt)
+const bookDetailsRoutes = require('../routes/bookDetails');
+// ...
+app.use('/api/books', bookDetailsRoutes);
+
+
 // Import existing routes
 const trendingBooksRoutes = require('../routes/trendingBooks');
 const searchBooksRoutes = require('../routes/searchBooks');

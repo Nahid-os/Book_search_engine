@@ -1,3 +1,4 @@
+// app/page.jsx
 "use client";
 import React, { useState, useEffect } from 'react';
 import NavigationBar from '../components/NavigationBar.jsx';
@@ -67,14 +68,11 @@ export default function BookSearchEngine() {
     setExpandedFilters(prev => ({ ...prev, [filter]: !prev[filter] }));
   };
 
-  // Helper function to render the list of books (or skeleton loaders if loading)
+  // Helper function to render BookCards or skeleton loaders
   const renderBooks = (maxDescLength) => {
     if (isLoading) {
       return Array(3).fill(null).map((_, index) => (
-        <div
-          key={index}
-          className="bg-gradient-to-br from-white to-blue-50 dark:from-gray-800 dark:to-gray-750 rounded-lg shadow-md p-6 transition-all duration-300"
-        >
+        <div key={index} className="bg-gradient-to-br from-white to-blue-50 dark:from-gray-800 dark:to-gray-750 rounded-lg shadow-md p-6 transition-all duration-300">
           <SkeletonLoader />
         </div>
       ));
@@ -82,8 +80,9 @@ export default function BookSearchEngine() {
       return books.map((book, index) => (
         <BookCard
           key={index}
-          title={book.title || 'Untitled'}
-          author={book.authors || 'Author'}  // This expects authors to be a human-readable string
+          bookId={book.book_id}  // Pass the book's id for navigation
+          title={book.title || "Untitled"}
+          author={book.authors || "Author"}
           average_rating={book.average_rating}
           ratings_count={book.ratings_count}
           description={
@@ -99,7 +98,6 @@ export default function BookSearchEngine() {
   return (
     <div className={`min-h-screen flex flex-col bg-blue-50 dark:bg-gray-900 text-gray-700 dark:text-gray-200 transition-colors duration-300 ${isDarkMode ? 'dark' : ''}`}>
       <NavigationBar isDarkMode={isDarkMode} toggleTheme={toggleTheme} setIsSearchView={setIsSearchView} />
-
       <main className="flex-grow">
         <div className="max-w-7xl mx-auto px-4 py-8">
           {isSearchView ? (
@@ -143,7 +141,6 @@ export default function BookSearchEngine() {
           )}
         </div>
       </main>
-
       <Footer />
     </div>
   );
