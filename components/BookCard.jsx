@@ -1,5 +1,5 @@
 // components/BookCard.jsx
-"use client"; // If you need client-side hooks (e.g., Next.js 13), add this directive
+"use client";
 
 import React from 'react';
 import Link from 'next/link';
@@ -12,7 +12,8 @@ const truncateText = (text, wordLimit) => {
 };
 
 const BookCard = ({ bookId, title, author, average_rating, ratings_count, description }) => (
-  <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 transition-all duration-300 hover:shadow-lg hover:scale-[1.02] min-h-[400px] flex flex-col justify-between">
+  // Use a pastel gradient for light mode, and a dark gradient for dark mode
+  <div className="bg-gradient-to-br from-pink-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 rounded-lg shadow-md p-6 transition-all duration-300 hover:shadow-lg hover:scale-[1.02] min-h-[400px] flex flex-col justify-between">
     <div>
       <h2 className="text-xl font-bold mb-2 text-gray-800 dark:text-gray-200 hover:text-pink-600 dark:hover:text-pink-300 transition-colors duration-300">
         {title}
@@ -32,13 +33,13 @@ const BookCard = ({ bookId, title, author, average_rating, ratings_count, descri
     </div>
 
     <div className="flex space-x-2 mt-auto">
-      {/* "Add to Wishlist" with purple button styling */}
+      {/* Purple button for "Add to Wishlist" */}
       <button className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors dark:bg-purple-700 dark:hover:bg-purple-600 flex items-center text-sm">
         <BookmarkPlus className="h-4 w-4 mr-2" />
         Add to Wishlist
       </button>
 
-      {/* "View Details" with pink button styling */}
+      {/* Pink button for "View Details" */}
       <Link href={`/book/${bookId}`}>
         <button className="px-4 py-2 bg-pink-600 text-white rounded-md hover:bg-pink-700 transition-colors dark:bg-pink-700 dark:hover:bg-pink-600 flex items-center text-sm">
           <BookOpen className="h-4 w-4 mr-2" />

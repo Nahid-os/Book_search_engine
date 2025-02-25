@@ -104,7 +104,7 @@ export default function BookSearchEngine() {
   return (
     // Match the same gradient as Book Details: from-purple-100 to-pink-100
     <div
-      className={`min-h-screen flex flex-col bg-gradient-to-b from-purple-100 to-pink-100 dark:from-purple-900 dark:to-pink-900 ${
+      className={`min-h-screen flex flex-col bg-gradient-to-b from-purple-100 to-pink-100 dark:from-gray-800 dark:to-gray-900 ${
         isDarkMode ? "dark" : ""
       }`}
     >
