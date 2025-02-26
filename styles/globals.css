@@ -1,8 +1,56 @@
-
-
-/* styles/globals.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-
+@layer components {
+  /* Card container with a pastel gradient */
+  .card-gradient {
+    @apply bg-gradient-to-br from-pink-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 rounded-lg shadow-md p-6 transition-all duration-300 hover:shadow-lg hover:scale-105 min-h-[400px] flex flex-col justify-between;
+  }
+  
+  /* Card content styling */
+  .card-content {
+    @apply mb-4;
+  }
+  .card-title {
+    @apply text-xl font-bold mb-2 text-gray-800 dark:text-gray-200 hover:text-pink-600 dark:hover:text-pink-300 transition-colors duration-300;
+  }
+  .card-author {
+    @apply text-sm text-gray-600 dark:text-gray-400 mb-2 font-medium;
+  }
+  .card-rating {
+    @apply flex items-center mb-2;
+  }
+  .star-icon {
+    @apply h-4 w-4 mr-1;
+  }
+  .star-filled {
+    @apply text-yellow-400;
+  }
+  .star-empty {
+    @apply text-gray-300 dark:text-gray-600;
+  }
+  .rating-text {
+    @apply text-sm text-gray-600 dark:text-gray-400;
+  }
+  .card-description {
+    @apply text-sm text-gray-700 dark:text-gray-300;
+  }
+  
+  /* Card actions / buttons */
+  .card-actions {
+    @apply flex space-x-2 mt-auto;
+  }
+  .btn {
+    @apply px-4 py-2 rounded-md transition-colors duration-300 flex items-center text-sm;
+  }
+  .btn-primary {
+    @apply bg-purple-600 text-white hover:bg-purple-700 dark:bg-purple-700 dark:hover:bg-purple-600;
+  }
+  .btn-secondary {
+    @apply bg-pink-600 text-white hover:bg-pink-700 dark:bg-pink-700 dark:hover:bg-pink-600;
+  }
+  .icon {
+    @apply h-4 w-4 mr-2;
+  }
+}
