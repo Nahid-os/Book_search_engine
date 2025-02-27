@@ -14,6 +14,22 @@ const truncateText = (text, wordLimit) => {
 const BookCard = ({ bookId, title, author, average_rating, ratings_count, description }) => {
   const router = useRouter();
 
+  // Convert the author prop into a human-readable string if it's not already a string.
+  let authorText = "";
+  if (typeof author === "object") {
+    if (Array.isArray(author)) {
+      // Check if objects have a 'name' property; if not, use author_id
+      authorText = author
+        .map((item) => item.name ? item.name : item.author_id)
+        .join(", ");
+    } else {
+      authorText = author.name || author.author_id || "Unknown Author";
+    }
+  } else {
+    authorText = author;
+  }
+
+  // Handler for "View Details" button (logs interaction and navigates)
   const handleViewDetails = async () => {
     try {
       await fetch("http://localhost:3001/api/interactions", {
@@ -25,8 +41,28 @@ const BookCard = ({ bookId, title, author, average_rating, ratings_count, descri
     } catch (error) {
       console.error("Error logging interaction:", error);
     }
-    // After logging the interaction, navigate to the book details page.
     router.push(`/book/${bookId}`);
+  };
+
+  // Handler for "Add to Wishlist" button
+  const handleAddToWishlist = async () => {
+    try {
+      const res = await fetch("http://localhost:3001/api/wishlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ bookId }),
+      });
+      if (res.ok) {
+        alert("Book added to wishlist!");
+      } else {
+        const errorData = await res.json();
+        alert(errorData.error || "Failed to add book to wishlist");
+      }
+    } catch (error) {
+      console.error("Error adding to wishlist:", error);
+      alert("An error occurred while adding to wishlist");
+    }
   };
 
   return (
@@ -35,7 +71,9 @@ const BookCard = ({ bookId, title, author, average_rating, ratings_count, descri
         <h2 className="text-xl font-bold mb-2 text-gray-800 dark:text-gray-200 hover:text-pink-600 dark:hover:text-pink-300 transition-colors duration-300">
           {title}
         </h2>
-        <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 font-medium">by {author}</p>
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 font-medium">
+          by {authorText || "Unknown Author"}
+        </p>
         <div className="flex items-center mb-2">
           <Star className="h-4 w-4 text-yellow-400 mr-1" />
           <span className="text-sm text-gray-600 dark:text-gray-400">
@@ -50,7 +88,10 @@ const BookCard = ({ bookId, title, author, average_rating, ratings_count, descri
       </div>
 
       <div className="flex space-x-2 mt-auto">
-        <button className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors dark:bg-purple-700 dark:hover:bg-purple-600 flex items-center text-sm">
+        <button
+          onClick={handleAddToWishlist}
+          className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors dark:bg-purple-700 dark:hover:bg-purple-600 flex items-center text-sm"
+        >
           <BookmarkPlus className="h-4 w-4 mr-2" /> Add to Wishlist
         </button>
 
