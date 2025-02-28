@@ -11,16 +11,24 @@ const truncateText = (text, wordLimit) => {
   return words.length > wordLimit ? words.slice(0, wordLimit).join(" ") + "..." : text;
 };
 
-const BookCard = ({ bookId, title, author, average_rating, ratings_count, description }) => {
+const BookCard = ({
+  bookId,
+  title,
+  author,
+  average_rating,
+  ratings_count,
+  description,
+  isInWishlist = false, // new prop
+  onRemove // callback to remove from local state
+}) => {
   const router = useRouter();
 
-  // Convert the author prop into a human-readable string if it's not already a string.
+  // Convert author to a readable string if needed
   let authorText = "";
   if (typeof author === "object") {
     if (Array.isArray(author)) {
-      // Check if objects have a 'name' property; if not, use author_id
       authorText = author
-        .map((item) => item.name ? item.name : item.author_id)
+        .map((item) => (item.name ? item.name : item.author_id))
         .join(", ");
     } else {
       authorText = author.name || author.author_id || "Unknown Author";
@@ -29,7 +37,7 @@ const BookCard = ({ bookId, title, author, average_rating, ratings_count, descri
     authorText = author;
   }
 
-  // Handler for "View Details" button (logs interaction and navigates)
+  // "View Details" handler
   const handleViewDetails = async () => {
     try {
       await fetch("http://localhost:3001/api/interactions", {
@@ -44,7 +52,7 @@ const BookCard = ({ bookId, title, author, average_rating, ratings_count, descri
     router.push(`/book/${bookId}`);
   };
 
-  // Handler for "Add to Wishlist" button
+  // "Add to Wishlist" handler
   const handleAddToWishlist = async () => {
     try {
       const res = await fetch("http://localhost:3001/api/wishlist", {
@@ -62,6 +70,28 @@ const BookCard = ({ bookId, title, author, average_rating, ratings_count, descri
     } catch (error) {
       console.error("Error adding to wishlist:", error);
       alert("An error occurred while adding to wishlist");
+    }
+  };
+
+  // "Remove from Wishlist" handler
+  const handleRemoveFromWishlist = async () => {
+    try {
+      const res = await fetch(`http://localhost:3001/api/wishlist/${bookId}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      if (res.ok) {
+        alert("Book removed from wishlist!");
+        if (onRemove) {
+          onRemove(bookId);
+        }
+      } else {
+        const errorData = await res.json();
+        alert(errorData.error || "Failed to remove book from wishlist");
+      }
+    } catch (error) {
+      console.error("Error removing from wishlist:", error);
+      alert("An error occurred while removing from wishlist");
     }
   };
 
@@ -88,16 +118,24 @@ const BookCard = ({ bookId, title, author, average_rating, ratings_count, descri
       </div>
 
       <div className="flex space-x-2 mt-auto">
+        {isInWishlist ? (
+          <button
+            onClick={handleRemoveFromWishlist}
+            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md transition-colors duration-300 flex items-center text-sm"
+          >
+            Remove from Wishlist
+          </button>
+        ) : (
+          <button
+            onClick={handleAddToWishlist}
+            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition-colors duration-300 flex items-center text-sm"
+          >
+            <BookmarkPlus className="h-4 w-4 mr-2" /> Add to Wishlist
+          </button>
+        )}
         <button
-          onClick={handleAddToWishlist}
-          className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors dark:bg-purple-700 dark:hover:bg-purple-600 flex items-center text-sm"
-        >
-          <BookmarkPlus className="h-4 w-4 mr-2" /> Add to Wishlist
-        </button>
-
-        <button 
           onClick={handleViewDetails}
-          className="px-4 py-2 bg-pink-600 text-white rounded-md hover:bg-pink-700 transition-colors dark:bg-pink-700 dark:hover:bg-pink-600 flex items-center text-sm"
+          className="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white px-4 py-2 rounded-md transition-colors duration-300 flex items-center text-sm"
         >
           <BookOpen className="h-4 w-4 mr-2" /> View Details
         </button>
