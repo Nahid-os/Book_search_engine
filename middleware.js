@@ -2,7 +2,8 @@
 import { NextResponse } from "next/server";
 
 export function middleware(request) {
-  const allowedPaths = ["/login", "/api", "/_next", "/favicon.ico"];
+  // Added "/register" to allowed paths
+  const allowedPaths = ["/login", "/register", "/api", "/_next", "/favicon.ico"];
   if (allowedPaths.some(path => request.nextUrl.pathname.startsWith(path))) {
     return NextResponse.next();
   }
