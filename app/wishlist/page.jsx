@@ -31,6 +31,11 @@ export default function WishlistPage() {
     fetchWishlist();
   }, []);
 
+  // Callback for removing a book from local state
+  const handleRemove = (bookId) => {
+    setWishlist((prev) => prev.filter((b) => b.book_id !== bookId));
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-100 dark:bg-gray-900">
       <NavigationBar />
@@ -40,13 +45,11 @@ export default function WishlistPage() {
         </h1>
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {Array(3)
-              .fill(null)
-              .map((_, index) => (
-                <div key={index} className="bg-white rounded shadow p-4">
-                  <SkeletonLoader />
-                </div>
-              ))}
+            {Array(3).fill(null).map((_, index) => (
+              <div key={index} className="bg-white rounded shadow p-4">
+                <SkeletonLoader />
+              </div>
+            ))}
           </div>
         ) : wishlist.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -63,6 +66,8 @@ export default function WishlistPage() {
                     ? `${book.description.slice(0, 150)}...`
                     : "A captivating story that you'll enjoy."
                 }
+                isInWishlist={true}
+                onRemove={handleRemove}
               />
             ))}
           </div>
