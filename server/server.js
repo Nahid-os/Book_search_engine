@@ -1,4 +1,3 @@
-// server.js
 const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
@@ -53,6 +52,7 @@ client.connect().then(() => {
 
   app.use('/api/books', bookDetailsRoutes);
   app.use('/api/trending-books', trendingBooksRoutes);
+  // Note: Mounted as "/api/search-books" (with hyphen)
   app.use('/api/search-books', searchBooksRoutes);
   app.use('/api/auth', authRoutes);
   app.use('/api/interactions', interactionsRoutes);

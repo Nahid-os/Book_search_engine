@@ -128,14 +128,14 @@ const BookCard = ({
         ) : (
           <button
             onClick={handleAddToWishlist}
-            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition-colors duration-300 flex items-center text-sm"
+            className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors dark:bg-purple-700 dark:hover:bg-purple-600 flex items-center text-sm"
           >
             <BookmarkPlus className="h-4 w-4 mr-2" /> Add to Wishlist
           </button>
         )}
         <button
           onClick={handleViewDetails}
-          className="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white px-4 py-2 rounded-md transition-colors duration-300 flex items-center text-sm"
+          className="px-4 py-2 bg-pink-600 text-white rounded-md hover:bg-pink-700 transition-colors dark:bg-pink-700 dark:hover:bg-pink-600 flex items-center text-sm"
         >
           <BookOpen className="h-4 w-4 mr-2" /> View Details
         </button>

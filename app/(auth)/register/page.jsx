@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Register() {
   const [email, setEmail] = useState("");
@@ -39,13 +39,20 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
-      <form onSubmit={handleRegister} className="bg-white dark:bg-gray-800 p-8 rounded shadow-md w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white">Register</h2>
+    <div className="flex items-center justify-center py-16">
+      <form
+        onSubmit={handleRegister}
+        className="bg-white dark:bg-gray-800 p-8 rounded shadow-md w-full max-w-md"
+      >
+        <h2 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white">
+          Register
+        </h2>
         {error && <p className="mb-4 text-red-500">{error}</p>}
 
         <div className="mb-4">
-          <label className="block text-gray-700 dark:text-gray-300 mb-2">Email</label>
+          <label className="block text-gray-700 dark:text-gray-300 mb-2">
+            Email
+          </label>
           <input
             type="email"
             value={email}
@@ -56,7 +63,9 @@ export default function Register() {
         </div>
 
         <div className="mb-4">
-          <label className="block text-gray-700 dark:text-gray-300 mb-2">Password</label>
+          <label className="block text-gray-700 dark:text-gray-300 mb-2">
+            Password
+          </label>
           <input
             type="password"
             value={password}
@@ -67,7 +76,9 @@ export default function Register() {
         </div>
 
         <div className="mb-6">
-          <label className="block text-gray-700 dark:text-gray-300 mb-2">Confirm Password</label>
+          <label className="block text-gray-700 dark:text-gray-300 mb-2">
+            Confirm Password
+          </label>
           <input
             type="password"
             value={confirmPassword}
@@ -77,7 +88,10 @@ export default function Register() {
           />
         </div>
 
-        <button type="submit" className="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 rounded">
+        <button
+          type="submit"
+          className="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 rounded"
+        >
           Register
         </button>
       </form>
