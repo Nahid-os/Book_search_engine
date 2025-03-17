@@ -37,6 +37,7 @@ const searchBooksRoutes = require('../routes/searchBooks');
 const authRoutes = require('../routes/auth');
 const interactionsRoutes = require('../routes/interactions');
 const wishlistRoutes = require('../routes/wishlist');  // Newly added
+const recommendationsRoutes = require('../routes/recommendations');
 
 client.connect().then(() => {
   console.log('Connected to MongoDB');
@@ -57,6 +58,7 @@ client.connect().then(() => {
   app.use('/api/auth', authRoutes);
   app.use('/api/interactions', interactionsRoutes);
   app.use('/api/wishlist', wishlistRoutes);  // Mount wishlist routes
+  app.use('/api/recommendations', recommendationsRoutes);
 
   app.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);

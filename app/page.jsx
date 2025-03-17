@@ -13,11 +13,32 @@ export default function BookSearchEngine() {
   const [books, setBooks] = useState([]);
   const [activeTab, setActiveTab] = useState("trending");
   const [expandedFilters, setExpandedFilters] = useState({});
+  const [user, setUser] = useState(null);
 
+  // On mount, fetch authentication status to automatically retrieve the logged-in user
+  useEffect(() => {
+    fetch("http://localhost:3001/api/auth/status", {
+      credentials: "include",
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.loggedIn) {
+          setUser(data.user);
+        } else {
+          setUser(null);
+        }
+      })
+      .catch((error) =>
+        console.error("Error fetching auth status:", error)
+      );
+  }, []);
+
+  // Fetch trending books on initial load
   useEffect(() => {
     fetchTrendingBooks();
   }, []);
 
+  // Function to fetch trending books
   const fetchTrendingBooks = async () => {
     setIsLoading(true);
     try {
@@ -30,6 +51,26 @@ export default function BookSearchEngine() {
       }
     } catch (error) {
       console.error("Error fetching trending books:", error);
+    }
+    setIsLoading(false);
+  };
+
+  // Function to fetch recommended books using the logged-in user's id
+  const fetchRecommendedBooks = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch("http://localhost:3001/api/recommendations", {
+        credentials: "include",
+      });
+      if (response.ok) {
+        const data = await response.json();
+        // data only has { recommendations: [...] }
+        setBooks(data.recommendations);
+      } else {
+        console.error("Failed to fetch recommended books");
+      }
+    } catch (error) {
+      console.error("Error fetching recommended books:", error);
     }
     setIsLoading(false);
   };
@@ -55,7 +96,7 @@ export default function BookSearchEngine() {
       return books.map((book, index) => (
         <BookCard
           key={index}
-          bookId={book.book_id}
+          bookId={book.book_id || book._id} // Use either book_id or _id as the unique identifier
           title={book.title || "Untitled"}
           author={book.authors || "Author"}
           average_rating={book.average_rating}
@@ -79,7 +120,10 @@ export default function BookSearchEngine() {
           <div className="border-b border-gray-200 dark:border-gray-700">
             <nav className="flex">
               <button
-                onClick={() => setActiveTab("trending")}
+                onClick={() => {
+                  setActiveTab("trending");
+                  fetchTrendingBooks();
+                }}
                 className={`px-6 py-3 text-sm font-medium transition-colors duration-300 ${
                   activeTab === "trending"
                     ? "text-pink-600 dark:text-pink-300 border-b-2 border-pink-600 dark:border-pink-300"
@@ -89,7 +133,10 @@ export default function BookSearchEngine() {
                 Trending Books
               </button>
               <button
-                onClick={() => setActiveTab("recommended")}
+                onClick={() => {
+                  setActiveTab("recommended");
+                  fetchRecommendedBooks();
+                }}
                 className={`px-6 py-3 text-sm font-medium transition-colors duration-300 ${
                   activeTab === "recommended"
                     ? "text-pink-600 dark:text-pink-300 border-b-2 border-pink-600 dark:border-pink-300"

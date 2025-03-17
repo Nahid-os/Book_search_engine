@@ -3,9 +3,14 @@ const express = require('express');
 const router = express.Router();
 
 router.post('/', async (req, res) => {
-  // Only allow logged-in users to record interactions.
-  // Using Passport's isAuthenticated() is more explicit than checking req.user
-  if (!req.isAuthenticated || !req.isAuthenticated()) {
+  // Log user info and isAuthenticated() result for debugging
+  console.log("Incoming interaction request.");
+  console.log("req.user:", req.user);
+  console.log("req.isAuthenticated:", typeof req.isAuthenticated === "function" ? req.isAuthenticated() : "not a function");
+
+  // Ensure req.isAuthenticated exists and returns true.
+  if (typeof req.isAuthenticated !== 'function' || !req.isAuthenticated()) {
+    console.error("User not authenticated in interactions route.");
     return res.status(401).json({ error: "User not authenticated" });
   }
 
@@ -17,15 +22,16 @@ router.post('/', async (req, res) => {
 
     const db = req.app.locals.db;
     const userId = req.user._id; // from Passport session
+    console.log(`Logging interaction for userId: ${userId}, event: ${event}, bookId: ${bookId}`);
 
-    // Insert the interaction into the "interactions" collection.
-    await db.collection('interactions').insertOne({
+    const result = await db.collection('interactions').insertOne({
       event,       // e.g. "view_details"
       bookId,      // The ID of the book interacted with
       userId,      // The user's ID from the session
       timestamp: new Date()
     });
 
+    console.log("Interaction insert result:", result);
     res.status(200).json({ message: "Interaction logged" });
   } catch (error) {
     console.error("Error logging interaction:", error);
