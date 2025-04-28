@@ -1,12 +1,18 @@
-// routes/trendingBooks.js
-const express = require('express');
+/**
+ * Defines the API route for fetching a list of trending books.
+ * Trending is determined by sorting books based on rating count and average rating.
+ */
+
+const express = require('express');  
 const router = express.Router();
 
+// GET /api/trending - Fetches a list of trending books
 router.get('/', async (req, res) => {
   try {
     const db = req.app.locals.db;
     const booksCollection = db.collection('books');
 
+    // Define the aggregation pipeline to fetch trending books
     const pipeline = [
       {
         $match: {
@@ -14,25 +20,25 @@ router.get('/', async (req, res) => {
           average_rating: { $ne: null }
         }
       },
-      {
-        $sort: {
-          ratings_count: -1,
-          average_rating: -1
+      {  
+        $sort: {  // Sort by ratings_count and average_rating
+          ratings_count: -1, // Descending order for ratings_count
+          average_rating: -1 // Descending order for average_rating
         }
       },
       {
-        $limit: 21
+        $limit: 55  // Limit to top 55 trending books
       },
       {
-        $lookup: {
-          from: "authors",
-          localField: "authors.author_id",
-          foreignField: "author_id",
-          as: "authorDetails"
+        $lookup: {  // Join with authors collection
+          from: "authors", // Name of the authors collection
+          localField: "authors.author_id", // Field in books collection
+          foreignField: "author_id", // Field in authors collection
+          as: "authorDetails" // Output field for author details
         }
       },
       {
-        $project: {
+        $project: { // Project the fields to include in the output
           // Include book_id in the final output
           book_id: 1,
           title: 1,
@@ -40,7 +46,9 @@ router.get('/', async (req, res) => {
           ratings_count: 1,
           description: 1,
           authors: 1,
-          authorDetails: 1
+          authorDetails: 1,
+          isbn13: 1,
+          max_genre: 1
         }
       }
     ];
@@ -56,7 +64,7 @@ router.get('/', async (req, res) => {
       };
     });
 
-    res.json(formattedBooks);
+    res.json(formattedBooks); // Send the formatted books as JSON response
   } catch (error) {
     console.error('Error fetching trending books:', error);
     res.status(500).json({ error: 'Error fetching trending books' });
