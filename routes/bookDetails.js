@@ -31,8 +31,11 @@ router.get('/:bookId', async (req, res) => {
           publication_year: 1,
           num_pages: 1,
           isbn13: 1,
-          // Include max_genre in the output
-          max_genre: 1
+          max_genre: 1,
+          isbn: 1, 
+          language_code: 1,
+          similar_books: 1,
+          url: 1
         }
       }
     ];
