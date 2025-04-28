@@ -1,76 +1,81 @@
-const express = require('express');
+// routes/searchBooks.js
+const express = require("express");
 const router = express.Router();
+const esClient = require("../elasticClient"); // Import  Elasticsearch client
 
-router.get('/', async (req, res) => {
+// Helper function to treat any query that is purely numeric
+// (or numeric with an optional trailing X/x) as an ISBN.
+function isISBN(query) {
+  const cleaned = query.replace(/[-\s]/g, "");
+  return /^\d+([Xx])?$/.test(cleaned);
+}
+
+router.get("/", async (req, res) => {
   const { title } = req.query;
   if (!title) {
-    return res.status(400).json({ error: 'Title is required for search' });
+    return res.status(400).json({ error: "Title is required for search" });
   }
+
   try {
-    const db = req.app.locals.db;
-    const pipeline = [
-      // 1) Match books by text search
-      {
-        $match: {
-          $text: { $search: title }
-        }
-      },
-      // 2) Add a textScore field
-      {
-        $addFields: {
-          score: { $meta: 'textScore' }
-        }
-      },
-      // 3) Sort by textScore descending
-      {
-        $sort: {
-          score: { $meta: 'textScore' }
-        }
-      },
-      // 4) Limit results
-      {
-        $limit: 20
-      },
-      // 5) Lookup author docs if "authors" is an array of objects
-      {
-        $lookup: {
-          from: 'authors',
-          localField: 'authors.author_id',
-          foreignField: 'author_id',
-          as: 'authorDetails'
-        }
-      },
-      // 6) Project the fields 
-      {
-        $project: {
-          book_id: 1,
-          title: 1,
-          average_rating: 1,
-          ratings_count: 1,
-          description: 1,
-          authors: 1,
-          authorDetails: 1,
-          score: 1
-        }
+    let esQuery;
+
+    if (isISBN(title)) {
+      // ----- ISBN SEARCH BRANCH -----
+      let cleanedQuery = title.replace(/[-\s]/g, "");
+      // If the cleaned ISBN is 10 digits and starts with "0", remove the leading 0.
+      if (/^\d{10}$/.test(cleanedQuery) && cleanedQuery.startsWith("0")) {
+        cleanedQuery = cleanedQuery.substring(1);
       }
-    ];
+      
+      esQuery = {
+        query: {
+          bool: {
+            should: [
+              { term: { isbn: cleanedQuery } },  // ISBN-10
+              { term: { isbn13: cleanedQuery } } // ISBN-13
+            ]
+          }
+        },
+        size: 240
+      };
+    } else {
+      // ----- NON-ISBN SEARCH (TITLE, KEYWORDS, AUTHOR) -----
+      esQuery = {
+        query: {
+          multi_match: {
+            query: title,
+            fields: ["title^3", "author_names^2", "description"]  
+          }
+        },
+        size: 240
+      };
+    }
 
-    // Run the pipeline
-    const rawBooks = await db.collection('books').aggregate(pipeline).toArray();
+    // Perform the search in Elasticsearch
+    const esResponse = await esClient.search({
+      index: "books", // Make sure this matches your actual index name
+      body: esQuery
+    });
 
-    // 7) Transform authorDetails into a single authors string
-    const formattedBooks = rawBooks.map(book => {
-      const names = (book.authorDetails || []).map(a => a.name).filter(Boolean);
+    // esResponse.hits.hits is the array of matching docs
+    const rawBooks = esResponse.hits.hits.map((hit) => {
+      const source = hit._source;
       return {
-        ...book,
-        authors: names.length > 0 ? names.join(', ') : "Author"
+        ...source,
+        score: isISBN(title) ? 100 : hit._score
       };
     });
 
+    // Format the output: use the denormalized author_names field if available.
+    const formattedBooks = rawBooks.map((book) => ({
+      ...book,
+      authors: book.author_names || book.authors || "Author"
+    }));
+
     res.json(formattedBooks);
   } catch (error) {
-    console.error('Error fetching search results:', error);
-    res.status(500).json({ error: 'Error fetching search results' });
+    console.error("Error searching with Elasticsearch:", error);
+    res.status(500).json({ error: "Error fetching search results" });
   }
 });
 
