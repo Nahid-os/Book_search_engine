@@ -1,30 +1,55 @@
-import React from 'react';
+/**
+ * Defines the shared Footer component for the application.
+ * Displays copyright information and links to external profiles (e.g., GitHub, LinkedIn).
+ */
 
+"use client"; // Marks this as a Next.js Client Component
+
+import React from "react";
+import Link from "next/link"; // Next.js component for client-side navigation/linking
+import { Github, Linkedin } from "lucide-react"; // Icons for social links
+
+/**
+ * Renders the application footer.
+ * Includes copyright notice and links to external sites.
+ * @returns {JSX.Element} The footer component.
+ */
 const Footer = () => (
-  <footer className="bg-gray-100 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 transition-all duration-300 mt-12">
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      <div className="grid grid-cols-3 gap-8">
-        <div>
-          <h3 className="text-lg font-semibold mb-4">About Us</h3>
-          <p className="text-sm text-gray-600 dark:text-gray-400">Book Search Engine is your gateway to millions of books. Discover, explore, and find your next great read.</p>
-        </div>
-        <div>
-          <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
-          <ul className="space-y-2">
-            <li><a href="#" className="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300">Home</a></li>
-            <li><a href="#" className="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300">Search</a></li>
-            <li><a href="#" className="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300">Categories</a></li>
-            <li><a href="#" className="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300">About Us</a></li>
-          </ul>
-        </div>
-        <div>
-          <h3 className="text-lg font-semibold mb-4">Contact Us</h3>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Email: info@booksearchengine.com</p>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Phone: (123) 456-7890</p>
-        </div>
-      </div>
-      <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700">
-        <p className="text-center text-sm text-gray-600 dark:text-gray-400">&copy; 2024 Book Search Engine. All rights reserved.</p>
+  // Footer container with padding, background color (supports dark mode), shadow, and transitions
+  <footer className="py-6 bg-white dark:bg-gray-900 shadow-lg transition-colors duration-300">
+    {/* Centered content container with max-width and padding */}
+    <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Flex layout for arranging content, responsive direction change */}
+      <div className="flex flex-col sm:flex-row justify-between items-center">
+        {/* Copyright text */}
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          © {new Date().getFullYear()} Book Recommendation System. All rights reserved. {/* Dynamic year */}
+        </p>
+        {/* Navigation links container */}
+        <nav className="flex gap-6 mt-4 sm:mt-0">
+          {/* Link to GitHub repository */}
+          <Link
+            href="https://github.com/Nahid-os/Book_search_engine" 
+            target="_blank" // Opens link in a new tab
+            rel="noopener noreferrer" // Security best practice for target="_blank"
+            className="flex items-center gap-1 text-sm text-gray-500 hover:text-teal-600 dark:text-gray-400 dark:hover:text-teal-400 transition-colors duration-200"
+            aria-label="View source code on GitHub"
+          >
+            <Github className="h-5 w-5" />
+            GitHub
+          </Link>
+          {/* Link to LinkedIn profile */}
+          <Link
+            href="https://www.linkedin.com/in/nahid-001-nayan/" 
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1 text-sm text-gray-500 hover:text-teal-600 dark:text-gray-400 dark:hover:text-teal-400 transition-colors duration-200"
+            aria-label="View LinkedIn profile"
+          >
+            <Linkedin className="h-5 w-5" />
+            LinkedIn
+          </Link>
+        </nav>
       </div>
     </div>
   </footer>
