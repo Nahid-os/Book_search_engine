@@ -1,36 +1,72 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Book Recommendation and Search Engine 📚✨
 
-## Getting Started
+A full-stack web application for discovering, searching, and managing books, featuring personalized recommendations and a robust search engine.
 
-First, run the development server:
+## Prerequisites
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Before you begin, ensure you have the following installed:
+*   **Node.js:** (v18.x or later recommended)
+*   **npm** or **Yarn**
+*   **MongoDB:** Ensure it's running.
+*   **Elasticsearch:** Ensure it's running (typically on port 9200).
+*   **Python 3:** (For recommendation data processing)
+*   **Jupyter Notebook/Lab:** (For recommendation data processing)
+*   **Python Libraries:** `pymongo`, `numpy`, `scipy`, `scikit-learn`, `faiss-cpu` (or `faiss-gpu`). Install via pip:
+    ```bash
+    pip install pymongo numpy scipy scikit-learn faiss-cpu
+    ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Setup & Running
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+1.  **Clone the Repository:**
+    ```bash
+    git clone https://github.com/your-username/Book_Recommendation_And_Search_Engine.git
+    cd Book_Recommendation_And_Search_Engine
+    ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+2.  **Install Dependencies:**
+    ```bash
+    npm install
+    # or
+    yarn install
+    ```
 
-## Learn More
+3.  **Environment Variables:**
+    Create a `.env` file in the project root:
+    ```env
+    PORT=3001
+    MONGODB_URI=mongodb://127.0.0.1:27017
+    DATABASE_NAME=book_database
+    SESSION_SECRET=your_super_strong_session_secret_here_please_change_me
+    CORS_ORIGIN=http://localhost:3000
+    ```
+    *   **Important:** Change `SESSION_SECRET` to a strong, unique string.
 
-To learn more about Next.js, take a look at the following resources:
+4.  **Database & Search Engine Setup:**
+    *   **MongoDB Data:** Populate your MongoDB `books`, `authors`, and `goodreads_interactions` collections. (This process depends on your data source).
+    *   **Elasticsearch Sync:** Run `node syncBooks.js` to index your MongoDB `books` data into Elasticsearch.
+        ```bash
+        node syncBooks.js
+        ```
+    *   **Compute Similarities (for Recommendations):**
+        Run the `compute_cosine_similarity.ipynb` Jupyter Notebook. Ensure `MONGO_URI` in the notebook points to your database.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+5.  **Run the Application:**
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+    *   **Start Backend Server (Express.js):**
+        In one terminal:
+        ```bash
+        node server/server.js
+        ```
+        (Backend will run on `http://localhost:3001` by default)
 
-## Deploy on Vercel
+    *   **Start Frontend Server (Next.js):**
+        In another terminal:
+        ```bash
+        npm run dev
+        ```
+        (Frontend will run on `http://localhost:3000` by default)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+    Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
